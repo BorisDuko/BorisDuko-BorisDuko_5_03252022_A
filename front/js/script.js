@@ -32,26 +32,48 @@ const asyncAllProducts = async function () {
   const response = await fetch(apiURL);
   const data = await response.json();
   console.log(data);
-  renderMainPage(data);
+  for (let i in data) {
+    // productId = data[i]._id;
+    imageUrl = data[i].imageUrl;
+    altTxt = data[i].altTxt;
+    productName = data[i].name;
+    productDescription = data[i].description;
+    console.log(
+      imageUrl +
+        " - " +
+        altTxt +
+        ". " +
+        "Name: " +
+        productName +
+        ". Described as: " +
+        productDescription
+    );
+    // return ?what?
+  }
 };
 
 asyncAllProducts();
 // END async - await function
 
 // Render html function START
-const renderMainPage = function (data) {
-  // const renderMainPage = function (imageURL, productName, productDescription)
+// const renderMainPage = function (data) {
+const renderMainPage = function (
+  imageUrl,
+  altTxt,
+  productName,
+  productDescription
+) {
   const html = `
-  <a href="./product.html?id=42"> example : product[imageUrl]
+  <a href="./product.html?id=${data._id}"> example : product[imageUrl]
     <article>
-      <img class="product-img" src="${data.imageURL}" 
-      alt="Lorem ipsum dolor sit amet, ${data.name}">
+      <img class="product-img" src="${data.imageUrl}" 
+      alt="${data.altTxt}, ${data.name}">
       <h3 class="productName">${data.name}</h3>
       <p class="productDescription">${data.description}</p>
     </article>
   </a> */
   `;
-  itemContainer.insertAdjacentHTML("beforeend");
+  itemContainer.insertAdjacentHTML("beforeend", html);
 };
 // END Render html function
 /*
@@ -81,3 +103,27 @@ myDiv.appendChild(myItemHTML)
       <p class="productDescription">Dis enim malesuada risus sapien gravida nulla nisl arcu. Dis enim malesuada risus sapien gravida nulla nisl arcu.</p>
     </article>
   </a> */
+
+////////////////////////////
+// testing insertAdjacentHTML
+fetch(apiURL)
+  .then((res) => {
+    return res.json();
+  })
+  .then((data) => {
+    data.forEach((product) => {
+      const markup = `
+      
+      <article>
+      <img src=${product.imageUrl} alt=${product.altTxt}>
+      <h3 class="productName">${product.name}</h3>
+      <p class="productDescription">${product.description}</p>
+      </article>
+      
+      `;
+      itemContainer.insertAdjacentHTML("beforeend", markup);
+    });
+  });
+
+// <a href="/${product._id}"
+// <a/>
