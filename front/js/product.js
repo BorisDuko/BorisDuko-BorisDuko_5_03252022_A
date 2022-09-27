@@ -66,7 +66,7 @@ fetch(apiUrlId)
                   <select name="color-select" id="colors">
                     <option value="">--Please, select a color --</option>
                     //////////////////////////////
-
+                    
                     <option value="vert">green</option>
                     <option value="blanc">white</option>
                       
@@ -113,18 +113,28 @@ fetch(apiUrlId)
 const addColorToDropdown = () => {
   fetch(apiUrlId)
     .then((res) => {
+      console.log("This is json response", res);
       return res.json();
     })
     .then((productInfo) => {
-      productInfo.forEach((element) => {
-        const markup = `
-        <option value="${element.colors}">${element.colors[0]}</option>
-        `;
-
-        document
-          .querySelector("section")
-          .insertAdjacentElement("beforeend", markup);
+      console.log("This is product colors:", productInfo.colors);
+      const productColors = productInfo.colors;
+      productColors.forEach((element, index) => {
+        console.log(`${index + 1} Color: ${element}`);
       });
     });
 };
 addColorToDropdown();
+
+// product info loop ->
+// productInfo.forEach((element) => {
+//     console.log("Returning colors", element.colors);
+
+// const markup = `
+// <option value="${element.colors}">${element.colors}</option>
+// `;
+
+// document
+//   .querySelector("section")
+//   .insertAdjacentElement("beforeend", markup);
+//   });
