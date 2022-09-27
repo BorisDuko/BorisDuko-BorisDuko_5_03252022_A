@@ -113,7 +113,7 @@ fetch(apiURL)
   .then((data) => {
     data.forEach((product) => {
       const markup = `
-      <a href="./${product._id}">
+      <a href="/${product._id}">
       <article>
       <img src=${product.imageUrl} alt=${product.altTxt}>
       <h3 class="productName">${product.name}</h3>
