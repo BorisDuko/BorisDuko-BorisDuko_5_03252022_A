@@ -95,3 +95,34 @@ const addColorToDropdown = () => {
 //     console.log(`#${index + 1} Withdraw: ${Math.abs(element)}`);
 //   }
 // });
+
+// <--- Local Storage --->
+// local storage example
+const inpKey = document.getElementById("inputKey");
+const inpValue = document.getElementById("inputValue");
+const btnInserts = document.getElementById("btnInserts");
+const localStorageOutput = document.getElementById("lsOutput");
+
+btnInserts.onclick = () => {
+  // .value - returns given object's value
+  const key = inpKey.value;
+  const value = inpValue.value;
+
+  //   console.log(key);
+  //   console.log(value);
+
+  if (key && value) {
+    // setItem(key, value) – store key/value pair
+    localStorage.setItem(key, value);
+    location.reload();
+  }
+};
+for (let i = 0; i < localStorage.length; i++) {
+  // key(index) – get the key on a given position
+  const key = localStorage.key(i);
+  // getItem(key) – get the value by key
+  const value = localStorage.getItem(key);
+
+  // append to html
+  localStorageOutput.innerHTML += `${key}: ${value} <br />`;
+}

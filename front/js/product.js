@@ -103,3 +103,44 @@ fetch(apiUrlId)
       .querySelector("section")
       .insertAdjacentHTML("beforeend", productPageHTML);
   });
+
+// <--- Local Storage --->
+console.log("Product ID:", productParamId);
+// Get access to the DOM
+const addToCartButton = document.getElementById("addToCart");
+const chosenColor = document.getElementById("colors");
+const chosenQuantity = document.getElementById("quantity");
+
+// put string with product info into local storage
+// and create cart array
+// function addDataToLocalStorage() {
+fetch(apiUrlId)
+  .then((res) => {
+    return res.json();
+  })
+  .then((data) => {
+    localStorage.setItem("product", JSON.stringify(data));
+    // as a test adding id and colors[]
+    localStorage.setItem("id", JSON.stringify(data._id));
+    localStorage.setItem("colors", JSON.stringify(data.colors));
+    // to see if it works
+    if (!localStorage.getItem("cart")) {
+      localStorage.setItem("cart", "[]");
+    }
+  });
+// }
+
+// JSON.parse variables from local storage
+const product = JSON.parse(localStorage.getItem("product"));
+const cart = JSON.parse(localStorage.getItem("cart"));
+
+// setItems to local storage with key-value
+const stringifyId = JSON.stringify(productParamId);
+console.log("Product ID as a string", stringifyId);
+const productLsId = localStorage.setItem("id", productParamId);
+console.log("product ID in the local storage:", productParamId);
+
+// adding event listener for addToCartButton
+
+// console.log("color value is", chosenColor.value);
+// console.log(chosenQuantity.value);
