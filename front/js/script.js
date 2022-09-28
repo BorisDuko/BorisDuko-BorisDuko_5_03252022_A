@@ -13,7 +13,7 @@ function renderAllProducts() {
     })
     .then((data) => {
       data.forEach((product) => {
-        const html = `
+        const homePageHTML = `
         <a href="./product.html?id=${product._id}">
         <article>
         <img src=${product.imageUrl} alt=${product.altTxt}>
@@ -22,7 +22,7 @@ function renderAllProducts() {
         </article>
         </a>
         `;
-        itemContainer.insertAdjacentHTML("beforeend", html);
+        itemContainer.insertAdjacentHTML("beforeend", homePageHTML);
       });
     });
 }

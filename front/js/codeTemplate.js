@@ -53,6 +53,16 @@ movements.forEach((element, index, arr) => {
   }
 });
 
+// ----- to see product info -----
+fetch(apiUrlId)
+  .then((res) => {
+    return res.json();
+  })
+  .then((productInfo) => {
+    console.log("Array of product info: ⤵", productInfo);
+  });
+// ----- to see product info -----
+
 // dropdown items
 // create a function to render colors to dropdown
 const addColorToDropdown = () => {
@@ -75,3 +85,13 @@ const addColorToDropdown = () => {
       });
     });
 };
+
+// forEach method order example
+// const movements = [200, 450, -400, 300, -650, -130, 70, 1300];
+// movements.forEach((element, index, arr) => {
+//   if (element > 0) {
+//     console.log(`Movement #${index + 1}: ${element}`);
+//   } else {
+//     console.log(`#${index + 1} Withdraw: ${Math.abs(element)}`);
+//   }
+// });

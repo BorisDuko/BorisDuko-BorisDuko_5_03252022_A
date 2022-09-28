@@ -3,23 +3,17 @@ const itemContainer = document.querySelector(".item");
 
 const colorDropdown = document.querySelector("#colors");
 
-// URL Search Params
+// --- URL Search Params ---
+// get product key search location
 const productKeyValue = window.location.search;
+// create url parameter for individual product
 const productUrlParams = new URLSearchParams(productKeyValue);
+// get() return value with given search parameter `?id=`
 const productParamId = productUrlParams.get("id");
 
 // API URL: / + product Id
+// using search params from get() add it to apiUrl with slash
 const apiUrlId = "http://localhost:3000/api/products/" + productParamId;
-
-// ----- to see product info -----
-// fetch(apiUrlId)
-//   .then((res) => {
-//     return res.json();
-//   })
-//   .then((productInfo) => {
-//     console.log("Array of product info: ⤵", productInfo);
-//   });
-// ----- to see product info -----
 
 // Render product page
 fetch(apiUrlId)
@@ -27,10 +21,7 @@ fetch(apiUrlId)
     return response.json();
   })
   .then((product) => {
-    // try for loop for colors
-    // console.log(product);
-
-    // create a function to render colors to dropdown
+    // create a function to render colors to dropdown menu
     const addColorToDropdown = () => {
       fetch(apiUrlId)
         .then((response) => {
@@ -39,10 +30,10 @@ fetch(apiUrlId)
         .then((productInfo) => {
           console.log("This is product colors:", productInfo.colors);
           const productColors = productInfo.colors;
-          // forEach loop
+          // forEach loop to go through colors
           productColors.forEach((color, index) => {
             console.log(`${index + 1} Color: ${color}`);
-            // html render for dropdown
+            // html render for each color in dropdown menu
             const dropdownMarkup = `
             <option value="${color}">${color}</option>
             `;
@@ -81,9 +72,9 @@ fetch(apiUrlId)
                   <label for="color-select">Chose your color:</label>
                   <select name="color-select" id="colors">
                     <option value="">--Please, select a color --</option>
-                    //////////////////////////////
+                    
                     ${addColorToDropdown()}
-                    /////////////////////////////////
+                    
                   </select>
                 </div>
 
@@ -112,42 +103,3 @@ fetch(apiUrlId)
       .querySelector("section")
       .insertAdjacentHTML("beforeend", productPageHTML);
   });
-
-// forEach method order example
-// const movements = [200, 450, -400, 300, -650, -130, 70, 1300];
-// movements.forEach((element, index, arr) => {
-//   if (element > 0) {
-//     console.log(`Movement #${index + 1}: ${element}`);
-//   } else {
-//     console.log(`#${index + 1} Withdraw: ${Math.abs(element)}`);
-//   }
-// });
-
-const addColorToDropdown = () => {
-  fetch(apiUrlId)
-    .then((res) => {
-      console.log("This is json response", res);
-      return res.json();
-    })
-    .then((productInfo) => {
-      console.log("This is product colors:", productInfo.colors);
-      const productColors = productInfo.colors;
-      productColors.forEach((element, index) => {
-        console.log(`${index + 1} Color: ${element}`);
-      });
-    });
-};
-// addColorToDropdown();
-
-// product info loop ->
-// productInfo.forEach((element) => {
-//     console.log("Returning colors", element.colors);
-
-// const markup = `
-// <option value="${element.colors}">${element.colors}</option>
-// `;
-
-// document
-//   .querySelector("section")
-//   .insertAdjacentElement("beforeend", markup);
-//   });
