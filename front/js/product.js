@@ -12,13 +12,13 @@ const productParamId = productUrlParams.get("id");
 const apiUrlId = "http://localhost:3000/api/products/" + productParamId;
 
 // ----- to see product info -----
-fetch(apiUrlId)
-  .then((res) => {
-    return res.json();
-  })
-  .then((productInfo) => {
-    console.log("Array of product info: ⤵", productInfo);
-  });
+// fetch(apiUrlId)
+//   .then((res) => {
+//     return res.json();
+//   })
+//   .then((productInfo) => {
+//     console.log("Array of product info: ⤵", productInfo);
+//   });
 // ----- to see product info -----
 
 // Render product page
@@ -29,16 +29,32 @@ fetch(apiUrlId)
   .then((product) => {
     // try for loop for colors
     // console.log(product);
-    // product.colors.forEach((element, index) => {
-    //   const markup = `
-    //   <option value="${element.colors}">${element.colors}</option>
-    //   `;
-    //     document
-    //       .querySelector("select")
-    //       .insertAdjacentHTML("beforeend", markup);
-    // });
+
+    // create a function to render colors to dropdown
+    const addColorToDropdown = () => {
+      fetch(apiUrlId)
+        .then((response) => {
+          return response.json();
+        })
+        .then((productInfo) => {
+          console.log("This is product colors:", productInfo.colors);
+          const productColors = productInfo.colors;
+          // forEach loop
+          productColors.forEach((color, index) => {
+            console.log(`${index + 1} Color: ${color}`);
+            // html render for dropdown
+            const dropdownMarkup = `
+            <option value="${color}">${color}</option>
+            `;
+            document
+              .querySelector("#colors")
+              .insertAdjacentHTML("beforeend", dropdownMarkup);
+          });
+        });
+    };
+    // call this function inside productPageHTML ⤵
     // //////////////////
-    const html = `
+    const productPageHTML = `
       <article>
             <div class="item__img">
             <img src=${product.imageUrl} alt=${product.altTxt}>
@@ -66,10 +82,7 @@ fetch(apiUrlId)
                   <select name="color-select" id="colors">
                     <option value="">--Please, select a color --</option>
                     //////////////////////////////
-                    
-                    <option value="vert">green</option>
-                    <option value="blanc">white</option>
-                      
+                    ${addColorToDropdown()}
                     /////////////////////////////////
                   </select>
                 </div>
@@ -97,7 +110,7 @@ fetch(apiUrlId)
     // itemContainer.insertAdjacentHTML("beforeend", html);
     document
       .querySelector("section")
-      .insertAdjacentHTML("beforeend", html);
+      .insertAdjacentHTML("beforeend", productPageHTML);
   });
 
 // forEach method order example
@@ -124,7 +137,7 @@ const addColorToDropdown = () => {
       });
     });
 };
-addColorToDropdown();
+// addColorToDropdown();
 
 // product info loop ->
 // productInfo.forEach((element) => {

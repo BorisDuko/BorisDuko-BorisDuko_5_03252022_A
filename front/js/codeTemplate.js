@@ -53,7 +53,25 @@ movements.forEach((element, index, arr) => {
   }
 });
 
-
 // dropdown items
-<option value="vert">${product.colors[0]}</option>
-<option value="blanc">${product.colors[1]}</option>
+// create a function to render colors to dropdown
+const addColorToDropdown = () => {
+  fetch(apiUrlId)
+    .then((res) => {
+      console.log("This is json response", res);
+      return res.json();
+    })
+    .then((productInfo) => {
+      console.log("This is product colors:", productInfo.colors);
+      const productColors = productInfo.colors;
+      productColors.forEach((color, index) => {
+        console.log(`${index + 1} Color: ${color}`);
+        const dropdownMarkup = `
+        <option value="${color}">${color}</option>
+        `;
+        document
+          .querySelector("#colors")
+          .insertAdjacentHTML("beforeend", dropdownMarkup);
+      });
+    });
+};
