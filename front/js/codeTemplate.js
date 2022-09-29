@@ -126,3 +126,46 @@ for (let i = 0; i < localStorage.length; i++) {
   // append to html
   localStorageOutput.innerHTML += `${key}: ${value} <br />`;
 }
+
+// page loaded indicator
+function pageLoaded() {
+  window.addEventListener("load", (event) => {
+    console.log("page is fully loaded - load event");
+  });
+  window.onload = (event) => {
+    console.log("page is fully loaded - onload");
+  };
+}
+pageLoaded();
+
+// --- LOCAL STORAGE ---
+
+// put string with product info into local storage
+// and create cart array
+function addDataToLocalStorage() {
+  fetch(apiUrlId)
+    .then((res) => {
+      return res.json();
+    })
+    .then((data) => {
+      localStorage.setItem("product", JSON.stringify(data));
+      // as a test adding id and colors[]
+      localStorage.setItem("id", JSON.stringify(data._id));
+      localStorage.setItem("colors", JSON.stringify(data.colors));
+      // to see if it works
+      if (!localStorage.getItem("cart")) {
+        localStorage.setItem("cart", "[]");
+      }
+    });
+}
+// setItems to local storage with key-value
+const stringifyId = JSON.stringify(productParamId);
+const productLocalStorageId = localStorage.setItem("id", productParamId);
+
+console.log("Product ID as a string", stringifyId);
+console.log("product ID in the local storage:", productParamId);
+
+// JSON.parse variables from local storage
+const product = JSON.parse(localStorage.getItem("product"));
+const cart = JSON.parse(localStorage.getItem("cart"));
+// ----------------------------------

@@ -3,6 +3,10 @@ const itemContainer = document.querySelector(".item");
 
 const colorDropdown = document.querySelector("#colors");
 
+const addToCartButton = document.getElementById("addToCart");
+// const chosenColor = document.getElementById("colors");
+// const chosenQuantity = document.getElementById("quantity");
+
 // --- URL Search Params ---
 // get product key search location
 const productKeyValue = window.location.search;
@@ -21,30 +25,6 @@ fetch(apiUrlId)
     return response.json();
   })
   .then((product) => {
-    // create a function to render colors to dropdown menu
-    const addColorToDropdown = () => {
-      fetch(apiUrlId)
-        .then((response) => {
-          return response.json();
-        })
-        .then((productInfo) => {
-          console.log("This is product colors:", productInfo.colors);
-          const productColors = productInfo.colors;
-          // forEach loop to go through colors
-          productColors.forEach((color, index) => {
-            console.log(`${index + 1} Color: ${color}`);
-            // html render for each color in dropdown menu
-            const dropdownMarkup = `
-            <option value="${color}">${color}</option>
-            `;
-            document
-              .querySelector("#colors")
-              .insertAdjacentHTML("beforeend", dropdownMarkup);
-          });
-        });
-    };
-    // call this function inside productPageHTML ⤵
-    // //////////////////
     const productPageHTML = `
       <article>
             <div class="item__img">
@@ -72,16 +52,13 @@ fetch(apiUrlId)
                   <label for="color-select">Chose your color:</label>
                   <select name="color-select" id="colors">
                     <option value="">--Please, select a color --</option>
-                    
                     ${addColorToDropdown()}
-                    
                   </select>
                 </div>
 
                 <div class="item__content__settings__quantity">
                   <label for="itemQuantity"
-                    >Number of articles (1-100):</label
-                  >
+                    >Number of articles (1-100):</label>
                   <input
                     type="number"
                     name="itemQuantity"
@@ -102,45 +79,66 @@ fetch(apiUrlId)
     document
       .querySelector("section")
       .insertAdjacentHTML("beforeend", productPageHTML);
+    // adding event listener to the "Add to cart" button
+    // .calling it here because need to wait for page to render
+    document.getElementById("addToCart").addEventListener("click", () => {
+      addToLocalStorage();
+    });
   });
+
+// create a function to render colors to dropdown menu
+// call this function inside productPageHTML ⤴
+const addColorToDropdown = () => {
+  fetch(apiUrlId)
+    .then((response) => {
+      return response.json();
+    })
+    .then((productInfo) => {
+      console.log("This is product colors:", productInfo.colors);
+      const productColors = productInfo.colors;
+      // forEach loop to go through colors
+      productColors.forEach((color, index) => {
+        console.log(`${index + 1} Color: ${color}`);
+        // html render for each color in dropdown menu
+        const dropdownMarkup = `
+        <option value="${color}">${color}</option>
+        `;
+        document
+          .querySelector("#colors")
+          .insertAdjacentHTML("beforeend", dropdownMarkup);
+      });
+    });
+};
 
 // <--- Local Storage --->
 console.log("Product ID:", productParamId);
-// Get access to the DOM
-const addToCartButton = document.getElementById("addToCart");
-const chosenColor = document.getElementById("colors");
-const chosenQuantity = document.getElementById("quantity");
 
-// put string with product info into local storage
-// and create cart array
-// function addDataToLocalStorage() {
-fetch(apiUrlId)
-  .then((res) => {
-    return res.json();
-  })
-  .then((data) => {
-    localStorage.setItem("product", JSON.stringify(data));
-    // as a test adding id and colors[]
-    localStorage.setItem("id", JSON.stringify(data._id));
-    localStorage.setItem("colors", JSON.stringify(data.colors));
-    // to see if it works
-    if (!localStorage.getItem("cart")) {
-      localStorage.setItem("cart", "[]");
-    }
-  });
-// }
+// Function - add productID with chosen color and quantity to local storage
+const addToLocalStorage = () => {
+  // get values from from inputs
+  let productId = productParamId;
+  let color = document.getElementById("colors").value;
+  let quantity = document.getElementById("quantity").value;
+  // console.log(productId);
+  // console.log(color);
+  // console.log(quantity);
 
-// JSON.parse variables from local storage
-const product = JSON.parse(localStorage.getItem("product"));
-const cart = JSON.parse(localStorage.getItem("cart"));
+  // if values are NOT valid
+  if (!color || quantity <= 0) {
+    // notify user
+    alert("Please choose color and quantity");
+    return;
+  }
 
-// setItems to local storage with key-value
-const stringifyId = JSON.stringify(productParamId);
-console.log("Product ID as a string", stringifyId);
-const productLsId = localStorage.setItem("id", productParamId);
-console.log("product ID in the local storage:", productParamId);
+  // if values are valid
 
-// adding event listener for addToCartButton
+  // create CART object
+  let cart = {
+    id: productId,
+    color: color,
+    quantity: quantity,
+  };
 
-// console.log("color value is", chosenColor.value);
-// console.log(chosenQuantity.value);
+  // save values in the local storage
+  localStorage.setItem("cart", JSON.stringify(cart));
+};
