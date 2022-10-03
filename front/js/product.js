@@ -1,8 +1,6 @@
 // Get access to the DOM
 const itemContainer = document.querySelector(".item");
-
 const colorDropdown = document.querySelector("#colors");
-
 const addToCartButton = document.getElementById("addToCart");
 // const chosenColor = document.getElementById("colors");
 // const chosenQuantity = document.getElementById("quantity");
@@ -112,24 +110,20 @@ const addColorsToDropdown = () => {
 
 // <--- Local Storage --->
 console.log("Product ID:", productParamId);
-
-// get info form local storage if not - create empty array
-// const cart = JSON.parse(localStorage.getItem("cart"))
-//   ? JSON.parse(localStorage.getItem("cart"))
-//   : localStorage.setItem("cart", "");
-cart = JSON.parse(localStorage.getItem("cart")) || [];
-// const cart = JSON.parse(localStorage.getItem("cart"))
-//   ? JSON.parse(localStorage.getItem("cart"))
-//   : [];
+// create empty array adn push to LS
+const cart = [
+  {
+    id: "107fb5b75607497b96722bda5b504926",
+    color: "Blue",
+    quantity: "1",
+  },
+];
+localStorage.setItem("cart", JSON.stringify(cart));
+// get info from local storage if not - create empty array
+// cart = JSON.parse(localStorage.getItem("cart")) || [];
 
 // Function - add productID with chosen color and quantity to local storage
 const addToLocalStorage = () => {
-  // // create empty cart object
-  // const cart = {
-  //   id: "",
-  //   color: "",
-  //   quantity: "",
-  // };
   // get values from from inputs
   let id = productParamId;
   let color = document.getElementById("colors").value;
@@ -156,9 +150,9 @@ const addToLocalStorage = () => {
         quantity: quantity,
       });
     } else {
-      let currentQty = cart[i].quantity;
-      currentQty = Number(currentQty);
-      currentQty += quantity;
+      JSON.parse(localStorage.getItem("cart"));
+
+      cart[i].quantity += quantity;
     }
   }
 
