@@ -52,7 +52,7 @@ fetch(apiUrlId)
                   <label for="color-select">Chose your color:</label>
                   <select name="color-select" id="colors">
                     <option value="">--Please, select a color --</option>
-                    ${addColorToDropdown()}
+                    ${addColorsToDropdown()}
                   </select>
                 </div>
 
@@ -88,7 +88,7 @@ fetch(apiUrlId)
 
 // create a function to render colors to dropdown menu
 // call this function inside productPageHTML ⤴
-const addColorToDropdown = () => {
+const addColorsToDropdown = () => {
   fetch(apiUrlId)
     .then((response) => {
       return response.json();
@@ -114,20 +114,29 @@ const addColorToDropdown = () => {
 console.log("Product ID:", productParamId);
 
 // get info form local storage if not - create empty array
-const cart = JSON.parse(localStorage.getItem("cart")) || [];
+// const cart = JSON.parse(localStorage.getItem("cart"))
+//   ? JSON.parse(localStorage.getItem("cart"))
+//   : localStorage.setItem("cart", "");
+cart = JSON.parse(localStorage.getItem("cart")) || [];
+// const cart = JSON.parse(localStorage.getItem("cart"))
+//   ? JSON.parse(localStorage.getItem("cart"))
+//   : [];
 
 // Function - add productID with chosen color and quantity to local storage
 const addToLocalStorage = () => {
+  // // create empty cart object
+  // const cart = {
+  //   id: "",
+  //   color: "",
+  //   quantity: "",
+  // };
   // get values from from inputs
-  let productId = productParamId;
-  let productColor = document.getElementById("colors").value;
-  let productQuantity = document.getElementById("quantity").value;
-  // console.log(productId);
-  // console.log(color);
-  // console.log(quantity);
+  let id = productParamId;
+  let color = document.getElementById("colors").value;
+  let quantity = document.getElementById("quantity").value;
 
   // if values are NOT valid
-  if (!productColor || productQuantity <= 0) {
+  if (!color || quantity <= 0) {
     // notify user
     alert("Please choose color and quantity");
     return;
@@ -135,23 +144,24 @@ const addToLocalStorage = () => {
 
   // if values are valid
 
-  // for loop to check values matching values inside cart
-  for (let i = 0; i < cart.length; i++) {
-    if (
-      [cart[i]].id == productId &&
-      cart[i].productColor == productColor
-    ) {
-      quantity += productQuantity;
+  // read localStorage before for loop
+
+  // for loop to check matching values inside cart
+  for (let i in cart) {
+    if (cart[i].id !== id && cart[i].color !== color) {
+      // push new values in CART array as object
+      cart.push({
+        id: id,
+        color: color,
+        quantity: quantity,
+      });
+    } else {
+      let currentQty = cart[i].quantity;
+      currentQty = Number(currentQty);
+      currentQty += quantity;
     }
   }
 
-  // push new values in CART array as object
-  cart.push({
-    id: productId,
-    color: productColor,
-    quantity: productQuantity,
-  });
-
-  // save values in the local storage (as string)
+  // save values in the local storage (as a string)
   localStorage.setItem("cart", JSON.stringify(cart));
 };
