@@ -112,7 +112,8 @@ const addColorsToDropdown = () => {
 console.log("Product ID:", productParamId);
 
 // get info from local storage if not - create empty array
-var cart = JSON.parse(localStorage.getItem("cart")) || [];
+// I choose "let" because otherwise it's store values in memory
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
 // Function - add productID with chosen color and quantity to local storage
 const addToLocalStorage = () => {
@@ -131,6 +132,7 @@ const addToLocalStorage = () => {
   // if values are valid
 
   // read localStorage before for loop
+  // if cart is empty - create new object with given values
   if (cart.length == 0) {
     cart.push({
       id: chosenId,
@@ -142,8 +144,10 @@ const addToLocalStorage = () => {
     // for loop to check matching values inside cart
     for (let i in cart) {
       if (cart[i].id == chosenId && cart[i].color == chosenColor) {
-        let cartQuantity = cart[i].quantity;
-        cartQuantity += chosenQuantity;
+        // turn cart[i].quantity into number, assign it's value to variable
+        let cartQuantity = Number(cart[i].quantity);
+        // add new value (as number) to previous value
+        cartQuantity += Number(chosenQuantity);
         // update new quantity value
         cart[i].quantity = cartQuantity; // updating
         isUpdated = true; // to end loop if updated
