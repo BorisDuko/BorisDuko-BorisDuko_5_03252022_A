@@ -110,27 +110,19 @@ const addColorsToDropdown = () => {
 
 // <--- Local Storage --->
 console.log("Product ID:", productParamId);
-// create empty array adn push to LS
-const cart = [
-  {
-    id: "107fb5b75607497b96722bda5b504926",
-    color: "Blue",
-    quantity: "1",
-  },
-];
-localStorage.setItem("cart", JSON.stringify(cart));
+
 // get info from local storage if not - create empty array
-// cart = JSON.parse(localStorage.getItem("cart")) || [];
+var cart = JSON.parse(localStorage.getItem("cart")) || [];
 
 // Function - add productID with chosen color and quantity to local storage
 const addToLocalStorage = () => {
   // get values from from inputs
-  let id = productParamId;
-  let color = document.getElementById("colors").value;
-  let quantity = document.getElementById("quantity").value;
+  let chosenId = productParamId;
+  let chosenColor = document.getElementById("colors").value;
+  let chosenQuantity = document.getElementById("quantity").value;
 
   // if values are NOT valid
-  if (!color || quantity <= 0) {
+  if (!chosenColor || chosenQuantity <= 0) {
     // notify user
     alert("Please choose color and quantity");
     return;
@@ -139,23 +131,36 @@ const addToLocalStorage = () => {
   // if values are valid
 
   // read localStorage before for loop
+  if (cart.length == 0) {
+    cart.push({
+      id: chosenId,
+      color: chosenColor,
+      quantity: chosenQuantity,
+    });
+  } else {
+    let isUpdated = false;
+    // for loop to check matching values inside cart
+    for (let i in cart) {
+      if (cart[i].id == chosenId && cart[i].color == chosenColor) {
+        let cartQuantity = cart[i].quantity;
+        cartQuantity += chosenQuantity;
+        // update new quantity value
+        cart[i].quantity = cartQuantity; // updating
+        isUpdated = true; // to end loop if updated
+      } // end if for duplicate
+    } // end for
 
-  // for loop to check matching values inside cart
-  for (let i in cart) {
-    if (cart[i].id !== id && cart[i].color !== color) {
-      // push new values in CART array as object
+    // if no match - then push new values to the cart
+    if (isUpdated == false) {
+      // push new values in cart array as object
       cart.push({
-        id: id,
-        color: color,
-        quantity: quantity,
+        id: chosenId,
+        color: chosenColor,
+        quantity: chosenQuantity,
       });
-    } else {
-      JSON.parse(localStorage.getItem("cart"));
-
-      cart[i].quantity += quantity;
-    }
-  }
+    } // end if isUpdated
+  } // end if cart.length
 
   // save values in the local storage (as a string)
   localStorage.setItem("cart", JSON.stringify(cart));
-};
+}; // end addToLocalStorage() function
