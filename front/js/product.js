@@ -77,7 +77,7 @@ fetch(apiUrlId)
     document
       .querySelector("section")
       .insertAdjacentHTML("beforeend", productPageHTML);
-    // adding event listener to the "Add to cart" button
+    // adding event listener to the "addToCart" button
     // .calling it here because need to wait for page to render
     document.getElementById("addToCart").addEventListener("click", () => {
       addToLocalStorage();
