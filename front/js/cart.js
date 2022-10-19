@@ -28,9 +28,10 @@ const fetchAllProducts = async () => {
   }
 }; // end of fetchAllProducts()
 
-// async functions always return a promise
+// async functions always return a promise ⤴
 const catalog = fetchAllProducts();
-// so need to use .then() again
+
+// so need to use .then() again ⤵
 catalog.then((catalog) => {
   // Nested loops to match items
   for (let chosenItem in cart) {
@@ -38,18 +39,78 @@ catalog.then((catalog) => {
       // if Id in cart match item Id in catalog
       if (catalog[allItems]._id == cart[chosenItem].id) {
         // assign values
-        /**
-         * ================
-         * Button creation
-         * ================
-         */
-
-        // =================
-        const productToDisplay = catalog[allItems];
         const chosenProduct = cart[chosenItem];
+        const productToDisplay = catalog[allItems];
+
         // render <article> for each element that have a match
         // html markup to render chosen items in cart
-        const cartHTML = `
+        const cartHTML = renderCartPage(chosenProduct, productToDisplay);
+        cartItems.insertAdjacentHTML("beforeend", cartHTML);
+        // get access to rendered DOM
+        accessToDeleteBtn();
+        accessToQuantityToggle();
+        // ------------------
+
+        // ------------------
+      } // end if
+    } // end for catalog
+  } // end for cart
+}); // end of catalog.then((catalog)
+
+//  total price start>
+
+const updateTotals = () => {
+  catalog.then((catalog) => {
+    // create variables for total
+    let totalQuantity = 0;
+    let totalProductsPrice = 0;
+    // TODO get all the product from the cart
+    for (let chosenItem in cart) {
+      for (let allItems in catalog) {
+        // TODO delete item that was selected
+        // redo the line without the line is selected
+        // empty localStorage
+        // and rebuild page without the line was selected
+        if (catalog[allItems]._id == cart[chosenItem].id) {
+          // assign values
+          const itemQuantity = cart[chosenItem].quantity;
+          // total price of all products
+          totalProductsPrice =
+            totalProductsPrice + catalog[allItems].price * itemQuantity;
+          // total quantity of all products in the cart
+          totalQuantity = Number(totalQuantity) + Number(itemQuantity);
+        } // end if
+      } // end for (let allItems in catalog)
+    } // end for (let chosenItem in cart)
+    // inserting values into DOM
+    document.getElementById("totalQuantity").innerText = totalQuantity;
+    document.getElementById("totalPrice").innerText = totalProductsPrice;
+  });
+};
+
+// call the function
+// #TODO !
+updateTotals();
+// <end total price
+
+// <--- Modifications or removals of products on the cart page --->
+
+// ------------------------------------------------- ⤵
+// testing quantity toggle
+
+// testing quantity toggle
+// ------------------------------------------------- ⤴
+
+// load initial item
+window.addEventListener("DOMContentLoaded", (event) => {
+  console.log("DOM fully loaded and parsed");
+});
+
+// ========================================================
+// Function detailed area start>
+// ========================================================
+function renderCartPage(chosenProduct, productToDisplay) {
+  return `
           <article
           class="cart__item"
           data-id="${chosenProduct.id}"
@@ -82,50 +143,96 @@ catalog.then((catalog) => {
           </div>
         </article>
         `;
-        cartItems.insertAdjacentHTML("beforeend", cartHTML);
-        // get access to rendered DOM
-        accessToDeleteBtn();
-        accessToQuantityToggle();
-        // break; //get out of the loop
-      } // end if
-    } // end for catalog
-  } // end for cart
-}); // end of catalog.then((catalog)
-
-// <--- Modifications or removals of products on the cart page --->
-
-// load initial item
-window.addEventListener("DOMContentLoaded", (event) => {
-  console.log("DOM fully loaded and parsed");
-});
+}
 
 function accessToDeleteBtn() {
   // return node list
   const deleteButtons = document.querySelectorAll(".deleteItem");
-  // console.log("buttons collection is HERE:", deleteButtons);
-  // loop through node list of buttons
-  // and listen onclick to each button
+
   deleteButtons.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      // console.log(e.currentTarget.classList);
-      // console.log(e.btn);
-      alert("I ma CLICKED");
+    btn.addEventListener("click", (event) => {
+      // assign variables
+      let deleteButtonClicked = event.currentTarget;
+      let shopItem = deleteButtonClicked.closest(".cart__item");
+      let shopItemId = shopItem.getAttribute("data-id");
+      let shopItemColor = shopItem.getAttribute("data-color");
+      // remove div
+      shopItem.remove();
+      // get cart from local storage / assign to variable
+      const parsedCart = JSON.parse(localStorage.getItem("cart"));
+
+      for (let i = 0; i < parsedCart.length; i++) {
+        // item match id and color
+        if (
+          parsedCart[i].id === shopItemId &&
+          parsedCart[i].color === shopItemColor
+        ) {
+          // .splice(removes index [i] that match , 1 item)
+          parsedCart.splice(i, 1);
+        } // end if
+      } // end for
+      // pushing new cart  back to local storage
+      localStorage.setItem("cart", JSON.stringify(parsedCart));
+      // update total article and price using reload page
+      document.location.reload();
     });
   });
 }
 
-// now works :)  ⤵
 function accessToQuantityToggle() {
   const quantityToggle = document.querySelectorAll(".itemQuantity");
   quantityToggle.forEach((btn) => {
-    btn.addEventListener("click", (e) => {
-      console.log(e.currentTarget);
-      console.log(e.currentTarget.classList);
-      console.log(e.btn);
-      alert("Qty toggle");
+    btn.addEventListener("change", (e) => {
+      let input = e.target;
+
+      // input to be always number and not go less than 1
+      if (isNaN(input.value) || input.value <= 0) {
+        input.value = 1;
+      }
+      let deleteButtonClicked = e.currentTarget;
+      let shopItem = deleteButtonClicked.closest(".cart__item");
+      let shopItemId = shopItem.getAttribute("data-id");
+      let shopItemColor = shopItem.getAttribute("data-color");
+      // get cart from local storage / assign to variable
+      const parsedCart = JSON.parse(localStorage.getItem("cart"));
+      // console.log("this is parsed Cart:", parsedCart);
+      for (let i = 0; i < parsedCart.length; i++) {
+        if (
+          parsedCart[i].id === shopItemId &&
+          parsedCart[i].color === shopItemColor
+        ) {
+          console.log("found: " + shopItemId);
+
+          parsedCart[i].quantity = input.value;
+        } // end if
+      } // end for
+      // pushing new cart  back to local storage
+      localStorage.setItem("cart", JSON.stringify(parsedCart));
+      // update total article and price using reload page
+      // document.location.reload();
+      // --- to test ---
+      // here i give a second to choose quantity
+      setTimeout(() => {
+        document.location.reload();
+      }, 1000);
+      // --- to test ---
     });
   });
 }
+
+// getLocalStorage function
+/**
+   const getLocalStorage = () => {
+    return localStorage.getItem("cart")
+    ? JSON.parse(localStorage.getItem("cart"))
+    : [];
+};
+console.log("Get local storage function: ", getLocalStorage());
+ */
+
+// ========================================================
+// <end Function detailed area
+// ========================================================
 
 // === some testing functions ===
 /*
@@ -154,3 +261,10 @@ const doubleNum = arrayOfNumbers.map((value) => {
 console.log(doubleNum);
 arrSum(doubleNum);
 */
+
+// ======================
+/**
+ * > validate input: names = names, email = email ... etc.
+ * > create object - contains inputs
+ * > order: like fetch
+ */
