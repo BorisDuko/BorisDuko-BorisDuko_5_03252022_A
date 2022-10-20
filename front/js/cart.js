@@ -1,13 +1,13 @@
 console.log("-Cart Page-");
 // Get access to the DOM
 const cartItems = document.getElementById("cart__items");
-const orderButton = document.getElementById("order");
 
 // API URL
 const apiURL = "http://localhost:3000/api/products";
 
 // get info from LS if null creates empty array
-const cart = JSON.parse(localStorage.getItem("cart")) || [];
+// use LET to dynamically update quantity !important
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
 console.log("Parsed cart items:", cart);
 
 // function to create "catalog" of all products
@@ -30,9 +30,9 @@ const fetchAllProducts = async () => {
 
 // async functions always return a promise ⤴
 const catalog = fetchAllProducts();
-
 // so need to use .then() again ⤵
 catalog.then((catalog) => {
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
   // Nested loops to match items
   for (let chosenItem in cart) {
     for (let allItems in catalog) {
@@ -49,28 +49,21 @@ catalog.then((catalog) => {
         // get access to rendered DOM
         accessToDeleteBtn();
         accessToQuantityToggle();
-        // ------------------
-
-        // ------------------
       } // end if
     } // end for catalog
   } // end for cart
 }); // end of catalog.then((catalog)
 
-//  total price start>
-
+// update total price start>
 const updateTotals = () => {
   catalog.then((catalog) => {
     // create variables for total
     let totalQuantity = 0;
     let totalProductsPrice = 0;
-    // TODO get all the product from the cart
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
     for (let chosenItem in cart) {
       for (let allItems in catalog) {
-        // TODO delete item that was selected
-        // redo the line without the line is selected
-        // empty localStorage
-        // and rebuild page without the line was selected
         if (catalog[allItems]._id == cart[chosenItem].id) {
           // assign values
           const itemQuantity = cart[chosenItem].quantity;
@@ -87,19 +80,11 @@ const updateTotals = () => {
     document.getElementById("totalPrice").innerText = totalProductsPrice;
   });
 };
-
 // call the function
-// #TODO !
 updateTotals();
-// <end total price
+// <end total price & quantity update
 
 // <--- Modifications or removals of products on the cart page --->
-
-// ------------------------------------------------- ⤵
-// testing quantity toggle
-
-// testing quantity toggle
-// ------------------------------------------------- ⤴
 
 // load initial item
 window.addEventListener("DOMContentLoaded", (event) => {
@@ -127,7 +112,7 @@ function renderCartPage(chosenProduct, productToDisplay) {
             </div>
             <div class="cart__item__content__settings">
               <div class="cart__item__content__settings__quantity">
-                <p>Quantity: ${chosenProduct.quantity}</p>
+                <p>Quantity: </p>
                 <input
                   type="number"
                   class="itemQuantity"
@@ -148,7 +133,7 @@ function renderCartPage(chosenProduct, productToDisplay) {
 function accessToDeleteBtn() {
   // return node list
   const deleteButtons = document.querySelectorAll(".deleteItem");
-
+  // loop trough returned node list to access each button
   deleteButtons.forEach((btn) => {
     btn.addEventListener("click", (event) => {
       // assign variables
@@ -173,8 +158,8 @@ function accessToDeleteBtn() {
       } // end for
       // pushing new cart  back to local storage
       localStorage.setItem("cart", JSON.stringify(parsedCart));
-      // update total article and price using reload page
-      document.location.reload();
+      // call update to recalculate total
+      updateTotals();
     });
   });
 }
@@ -184,38 +169,31 @@ function accessToQuantityToggle() {
   quantityToggle.forEach((btn) => {
     btn.addEventListener("change", (e) => {
       let input = e.target;
-
       // input to be always number and not go less than 1
       if (isNaN(input.value) || input.value <= 0) {
         input.value = 1;
       }
+
       let deleteButtonClicked = e.currentTarget;
       let shopItem = deleteButtonClicked.closest(".cart__item");
       let shopItemId = shopItem.getAttribute("data-id");
       let shopItemColor = shopItem.getAttribute("data-color");
       // get cart from local storage / assign to variable
       const parsedCart = JSON.parse(localStorage.getItem("cart"));
-      // console.log("this is parsed Cart:", parsedCart);
+
       for (let i = 0; i < parsedCart.length; i++) {
         if (
           parsedCart[i].id === shopItemId &&
           parsedCart[i].color === shopItemColor
         ) {
-          console.log("found: " + shopItemId);
-
           parsedCart[i].quantity = input.value;
         } // end if
       } // end for
+
       // pushing new cart  back to local storage
       localStorage.setItem("cart", JSON.stringify(parsedCart));
-      // update total article and price using reload page
-      // document.location.reload();
-      // --- to test ---
-      // here i give a second to choose quantity
-      setTimeout(() => {
-        document.location.reload();
-      }, 1000);
-      // --- to test ---
+      // call update to recalculate total
+      updateTotals();
     });
   });
 }
@@ -233,6 +211,90 @@ console.log("Get local storage function: ", getLocalStorage());
 // ========================================================
 // <end Function detailed area
 // ========================================================
+
+// <--- RegExp  --->
+
+// DOM access to form
+const form = document.getElementById("form");
+// DOM access to order button
+const orderButton = document.getElementById("order");
+// DOM access to input fields
+const firstName = document.getElementById("firstName");
+const lastName = document.getElementById("lastName");
+const address = document.getElementById("address");
+const city = document.getElementById("city");
+const email = document.getElementById("email");
+// error messages access
+const firstNameErrorMsg = document.getElementById("firstNameErrorMsg");
+const lastNameErrorMsg = document.getElementById("lastNameErrorMsg");
+const addressErrorMsg = document.getElementById("addressErrorMsg");
+const cityErrorMsg = document.getElementById("cityErrorMsg");
+const emailErrorMsg = document.getElementById("emailErrorMsg");
+
+// create RegExp tests for some inputs fields
+const validate = () => {
+  let validString = /(^[a-zA-Z][a-zA-Z\s]{0,20}[a-zA-Z]$)/;
+  let validAddress = /\w+(\s\w+){2,}/;
+  let validEmail =
+    /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+  // if (regex.exec === null) {"you didn't have a match"}
+  if (!validString.test(firstName.value)) {
+    firstNameErrorMsg.innerHTML = "Please, enter your name";
+    // firstName.value = "";
+    return false;
+  } else if (!validString.test(lastName.value)) {
+    lastNameErrorMsg.innerHTML = "Please, enter valid last name";
+    return false;
+  } else if (!validAddress.test(address.value)) {
+    addressErrorMsg.innerHTML = "Please, enter valid address";
+    return false;
+  } else if (!validString.test(city.value)) {
+    cityErrorMsg.innerHTML = "Please, enter valid city";
+    return false;
+  } else if (!validEmail.test(email.value)) {
+    emailErrorMsg.innerHTML = "Please, enter correct email address";
+    return false;
+  } else {
+    return true;
+  }
+};
+
+// create object
+const contactInfo = {
+  firstName: this.firstName,
+  lastName: this.lastName,
+  address: this.address,
+  city: this.city,
+  email: this.email,
+};
+
+// form event listener
+form.addEventListener("submit", (event) => {
+  // without prevent doesn't redirect to confirmation page
+  event.preventDefault();
+  // calling RegExp function here ⤵
+  validate();
+
+  // if validate function is true
+  if (validate() === true) {
+    // assign values from user to the contact form object
+    contactInfo.firstName = firstName.value;
+    contactInfo.lastName = lastName.value;
+    contactInfo.address = address.value;
+    contactInfo.city = city.value;
+    contactInfo.email = email.value;
+    console.log("Contact Info OBJECT:", contactInfo);
+    // push object to local storage
+    localStorage.setItem("form", JSON.stringify(contactInfo));
+    alert("Thank you for your order");
+    // send user to conformation page
+    window.location.href = "confirmation.html";
+  } else {
+    // if validate is false do not update page, notify user
+    event.preventDefault();
+    // alert("Error in validation form");
+  }
+});
 
 // === some testing functions ===
 /*
