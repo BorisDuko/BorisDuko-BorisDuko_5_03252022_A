@@ -11,20 +11,21 @@ for (key in formObject) {
 }
 
 // ------------------------------------
-function validate() {
-  var user = document.getElementById("e").value;
-  var user2 = document.getElementById("e");
-  var re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-  if (re.test(user)) {
-    alert("done");
-    return true;
-  } else {
-    user2.style.border = "red solid 3px";
-    return false;
-  }
-}
-// ------------------------------------
 // fetch with POST method
 // url: /products/order
 // Sends back a contact object, a
 // product table and an orderId (string)
+const orderUrl = "http://localhost:3000/api/order";
+fetch(orderUrl, {
+  method: "POST",
+  body: formObject,
+})
+  .then((response) => {
+    response.json();
+  })
+  .then((data) => {
+    console.log(data);
+  })
+  .catch((err) => {
+    console.error(err);
+  });

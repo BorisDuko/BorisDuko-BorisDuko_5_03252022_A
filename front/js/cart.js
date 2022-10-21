@@ -8,7 +8,7 @@ const apiURL = "http://localhost:3000/api/products";
 // get info from LS if null creates empty array
 // use LET to dynamically update quantity !important
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
-console.log("Parsed cart items:", cart);
+// console.log("Parsed cart items:", cart);
 
 // function to create "catalog" of all products
 const fetchAllProducts = async () => {
@@ -54,7 +54,7 @@ catalog.then((catalog) => {
   } // end for cart
 }); // end of catalog.then((catalog)
 
-// update total price start>
+// update total price & quantity start>
 const updateTotals = () => {
   catalog.then((catalog) => {
     // create variables for total
@@ -231,7 +231,7 @@ const addressErrorMsg = document.getElementById("addressErrorMsg");
 const cityErrorMsg = document.getElementById("cityErrorMsg");
 const emailErrorMsg = document.getElementById("emailErrorMsg");
 
-// create RegExp tests for some inputs fields
+// create RegExp tests for the inputs fields
 const validate = () => {
   let validString = /(^[a-zA-Z][a-zA-Z\s]{0,20}[a-zA-Z]$)/;
   let validAddress = /\w+(\s\w+){2,}/;
@@ -240,6 +240,7 @@ const validate = () => {
   // if (regex.exec === null) {"you didn't have a match"}
   if (!validString.test(firstName.value)) {
     firstNameErrorMsg.innerHTML = "Please, enter your name";
+    // set input to empty string or leave it  with bad input? #TODO
     // firstName.value = "";
     return false;
   } else if (!validString.test(lastName.value)) {
@@ -259,42 +260,115 @@ const validate = () => {
   }
 };
 
-// create object
-const contactInfo = {
-  firstName: this.firstName,
-  lastName: this.lastName,
-  address: this.address,
-  city: this.city,
-  email: this.email,
-};
-
 // form event listener
-form.addEventListener("submit", (event) => {
-  // without prevent doesn't redirect to confirmation page
-  event.preventDefault();
-  // calling RegExp function here ⤵
-  validate();
+// form.addEventListener("submit", (event) => {
+// without prevent doesn't redirect to confirmation page
+// event.preventDefault();
+// calling RegExp function here ⤵
+// validate();
 
-  // if validate function is true
-  if (validate() === true) {
-    // assign values from user to the contact form object
-    contactInfo.firstName = firstName.value;
-    contactInfo.lastName = lastName.value;
-    contactInfo.address = address.value;
-    contactInfo.city = city.value;
-    contactInfo.email = email.value;
-    console.log("Contact Info OBJECT:", contactInfo);
-    // push object to local storage
-    localStorage.setItem("form", JSON.stringify(contactInfo));
-    alert("Thank you for your order");
-    // send user to conformation page
-    window.location.href = "confirmation.html";
-  } else {
-    // if validate is false do not update page, notify user
-    event.preventDefault();
-    // alert("Error in validation form");
-  }
+// if validate function is true
+// if (validate() === true) {
+// assign values from user to the contact form object
+// contactInfo.firstName = firstName.value;
+// contactInfo.lastName = lastName.value;
+// contactInfo.address = address.value;
+// contactInfo.city = city.value;
+// contactInfo.email = email.value;
+// console.log("Contact Info OBJECT:", contactInfo);
+// push object to local storage
+// localStorage.setItem("form", JSON.stringify(contactInfo));
+// alert("Thank you for your order");
+// send user to conformation page
+// window.location.href = "confirmation.html";
+// } else {
+// if validate is false do not update page, notify user
+// event.preventDefault();
+// alert("Error in validation form");
+// }
+// });
+// #TODO
+// 1. empty local storage after getting order number
+
+// =================================
+// POST test field
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
+  console.log("ORDERED - POST IN ACTION ⤵");
+
+  let arrayOfId = [
+    "107fb5b75607497b96722bda5b504926",
+    "415b7cacb65d43b2b5c1ff70f3393ad1",
+  ];
+  /**
+   * if product id match catalog ID
+   * then push Id that match to the array
+   * products += products.push[i]
+   */
+  // products.push("107fb5b75607497b96722bda5b504926");
+  // products.push("415b7cacb65d43b2b5c1ff70f3393ad1");
+
+  // create object
+  const contactObject = {
+    contact: {
+      firstName: form.firstName.value,
+      lastName: form.lastName.value,
+      address: form.address.value,
+      city: form.city.value,
+      email: form.email.value,
+    },
+    products: [
+      "107fb5b75607497b96722bda5b504926",
+      "415b7cacb65d43b2b5c1ff70f3393ad1",
+    ],
+  };
+
+  // "https://reqres.in/api/users"
+  fetch("http://localhost:3000/api/products/order", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(contactObject),
+  })
+    .then((response) => {
+      // guard clause
+      if (!response.ok) {
+        console.log("Problem");
+        return;
+      }
+      return response.json();
+    })
+    .then((data) => {
+      console.log("Success");
+      console.log("Server response:", data);
+      console.log("orderId:", data.orderId);
+      // return data;
+    })
+    .catch((err) => {
+      console.error(err);
+    });
 });
+// end POST test field
+// =================================
+
+/**
+ * > validate input: names = names, email = email ... etc.
+ * > create object - contains inputs
+ * > order: like fetch
+ */
+
+/**
+ *
+ * Expects request to contain:
+ * contact: {
+ *   firstName: string,
+ *   lastName: string,
+ *   address: string,
+ *   city: string,
+ *   email: string
+ * }
+ * products: [string] <-- array of product _id
+ *
+ */
 
 // === some testing functions ===
 /*
@@ -323,10 +397,3 @@ const doubleNum = arrayOfNumbers.map((value) => {
 console.log(doubleNum);
 arrSum(doubleNum);
 */
-
-// ======================
-/**
- * > validate input: names = names, email = email ... etc.
- * > create object - contains inputs
- * > order: like fetch
- */
