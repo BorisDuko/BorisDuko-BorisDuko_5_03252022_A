@@ -294,19 +294,7 @@ const validate = () => {
 // POST test field
 form.addEventListener("submit", (e) => {
   e.preventDefault();
-  console.log("ORDERED - POST IN ACTION ⤵");
-
-  let arrayOfId = [
-    "107fb5b75607497b96722bda5b504926",
-    "415b7cacb65d43b2b5c1ff70f3393ad1",
-  ];
-  /**
-   * if product id match catalog ID
-   * then push Id that match to the array
-   * products += products.push[i]
-   */
-  // products.push("107fb5b75607497b96722bda5b504926");
-  // products.push("415b7cacb65d43b2b5c1ff70f3393ad1");
+  console.log("Ordered - POST in action ⤵");
 
   // create object
   const contactObject = {
@@ -318,12 +306,51 @@ form.addEventListener("submit", (e) => {
       email: form.email.value,
     },
     products: [
-      "107fb5b75607497b96722bda5b504926",
-      "415b7cacb65d43b2b5c1ff70f3393ad1",
+      // "107fb5b75607497b96722bda5b504926",
+      // "415b7cacb65d43b2b5c1ff70f3393ad1",
     ],
   };
+  // FOR GEORGE = this is working ⤵ (line:314-315)
+  // contactObject.products.push("107fb5b75607497b96722bda5b504926");
+  // contactObject.products.push("415b7cacb65d43b2b5c1ff70f3393ad1");
+
+  // fetch function to loop through catalog of products and
+  // added to cart products Id's - if match push id's to products array
+  /**
+   * if product id match catalog ID
+   * then push Id that match to the contactObject.products array
+   * products += products.push[i]
+   */
+  catalog.then((catalog) => {
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    // Nested loops to match items
+    for (let chosenItem in cart) {
+      for (let allItems in catalog) {
+        // if Id in cart match item Id in catalog
+        if (catalog[allItems]._id == cart[chosenItem].id) {
+          const productId = cart[chosenItem].id;
+          // FOR GEORGE = but this is give back empty array (line:333)
+          contactObject.products.push(productId);
+          console.log("product Id:", productId);
+          console.log(contactObject.products);
+        } // end if
+      } // end for catalog
+    } // end for cart
+  }); // end of catalog.then((catalog)
+
+  // ------------Test products add to to array-------------------
+  // console.log("products array:", contactObject.products);
+  // ------------Test products add to to array-------------------
 
   // "https://reqres.in/api/users"
+  postRequest(contactObject);
+  // send user to conformation page
+  // window.location.href = "confirmation.html";
+});
+
+// function to POST user's input values in object
+// and get order Id back from server
+function postRequest(contactObject) {
   fetch("http://localhost:3000/api/products/order", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -332,7 +359,7 @@ form.addEventListener("submit", (e) => {
     .then((response) => {
       // guard clause
       if (!response.ok) {
-        console.log("Problem");
+        console.error("Problem");
         return;
       }
       return response.json();
@@ -340,13 +367,16 @@ form.addEventListener("submit", (e) => {
     .then((data) => {
       console.log("Success");
       console.log("Server response:", data);
-      console.log("orderId:", data.orderId);
+
+      // window.location.replace();
+      // console.log("orderId:", data.orderId);
       // return data;
     })
     .catch((err) => {
       console.error(err);
     });
-});
+}
+
 // end POST test field
 // =================================
 
