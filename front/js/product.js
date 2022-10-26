@@ -62,7 +62,7 @@ fetch(apiUrlId)
                     name="itemQuantity"
                     min="1"
                     max="100"
-                    value="0"
+                    value="1"
                     id="quantity" />
                 </div>
               </div>

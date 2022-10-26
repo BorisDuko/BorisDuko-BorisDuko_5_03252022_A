@@ -169,3 +169,50 @@ console.log("product ID in the local storage:", productParamId);
 const product = JSON.parse(localStorage.getItem("product"));
 const cart = JSON.parse(localStorage.getItem("cart"));
 // ----------------------------------
+
+// getLocalStorage function
+/**
+   const getLocalStorage = () => {
+    return localStorage.getItem("cart")
+    ? JSON.parse(localStorage.getItem("cart"))
+    : [];
+};
+console.log("Get local storage function: ", getLocalStorage());
+ */
+
+// retrieve form from Local Storage
+const formObject = JSON.parse(localStorage.getItem("form"));
+console.log(formObject);
+
+for (key in formObject) {
+  const markup = `
+    <div>
+    <span>${key}: ${formObject[key]}</span>
+    </div>`;
+  document.getElementById("limitedWidthBlock").innerHTML += markup;
+}
+
+// ------------------------------------
+// fetch with POST method
+// url: /products/order
+// Sends back a contact object, a
+// product table and an orderId (string)
+
+// const orderUrl = "http://localhost:3000/api/products/order";
+// fetch(orderUrl, {
+//   method: "POST",
+//   body: formObject,
+// })
+//   .then((response) => {
+//     response.json();
+//   })
+//   .then((data) => {
+//     console.log(data);
+//   })
+//   .catch((err) => {
+//     console.error(err);
+//   });
+
+// access to DOM orderId
+// const orderNumber = document.getElementById("orderId");
+// orderNumber.innerHTML = data.orderId;

@@ -40,17 +40,6 @@ const asyncAllProducts = async function () {
     altTxt = data[i].altTxt;
     productName = data[i].name;
     productDescription = data[i].description;
-    // console.log(
-    //   imageUrl +
-    //     " - " +
-    //     altTxt +
-    //     ". " +
-    //     "Name: " +
-    //     productName +
-    //     ". Described as: " +
-    //     productDescription
-    // );
-    // return ?what?
   }
 };
 asyncAllProducts();

@@ -1,36 +1,13 @@
-// retrieve form from Local Storage
-const formObject = JSON.parse(localStorage.getItem("form"));
-console.log(formObject);
+// DOM access
+const confirmSpan = document.getElementById("orderId");
+// --- URL Search Params ---
+// get orderId key search location
+const orderIdValue = window.location.search;
+// create url parameter for individual product
+const orderIdUrlParams = new URLSearchParams(orderIdValue);
+// get() return value with given search parameter `?orderId=`
+const orderId = orderIdUrlParams.get("orderId");
+console.log(orderId);
 
-for (key in formObject) {
-  const markup = `
-    <div>
-    <span>${key}: ${formObject[key]}</span>
-    </div>`;
-  document.getElementById("limitedWidthBlock").innerHTML += markup;
-}
-
-// ------------------------------------
-// fetch with POST method
-// url: /products/order
-// Sends back a contact object, a
-// product table and an orderId (string)
-
-// const orderUrl = "http://localhost:3000/api/products/order";
-// fetch(orderUrl, {
-//   method: "POST",
-//   body: formObject,
-// })
-//   .then((response) => {
-//     response.json();
-//   })
-//   .then((data) => {
-//     console.log(data);
-//   })
-//   .catch((err) => {
-//     console.error(err);
-//   });
-
-// access to DOM orderId
-// const orderNumber = document.getElementById("orderId");
-// orderNumber.innerHTML = data.orderId;
+// place OrderId with innerText
+confirmSpan.innerText = orderId;

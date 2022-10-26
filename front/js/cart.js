@@ -198,16 +198,6 @@ function accessToQuantityToggle() {
   });
 }
 
-// getLocalStorage function
-/**
-   const getLocalStorage = () => {
-    return localStorage.getItem("cart")
-    ? JSON.parse(localStorage.getItem("cart"))
-    : [];
-};
-console.log("Get local storage function: ", getLocalStorage());
- */
-
 // ========================================================
 // <end Function detailed area
 // ========================================================
@@ -260,93 +250,57 @@ const validate = () => {
   }
 };
 
-// form event listener
-// form.addEventListener("submit", (event) => {
-// without prevent doesn't redirect to confirmation page
-// event.preventDefault();
-// calling RegExp function here ⤵
-// validate();
-
-// if validate function is true
-// if (validate() === true) {
-// assign values from user to the contact form object
-// contactInfo.firstName = firstName.value;
-// contactInfo.lastName = lastName.value;
-// contactInfo.address = address.value;
-// contactInfo.city = city.value;
-// contactInfo.email = email.value;
-// console.log("Contact Info OBJECT:", contactInfo);
-// push object to local storage
-// localStorage.setItem("form", JSON.stringify(contactInfo));
-// alert("Thank you for your order");
-// send user to conformation page
-// window.location.href = "confirmation.html";
-// } else {
-// if validate is false do not update page, notify user
-// event.preventDefault();
-// alert("Error in validation form");
-// }
-// });
-// #TODO
-// 1. empty local storage after getting order number
-
 // =================================
 // POST test field
 form.addEventListener("submit", (e) => {
+  // without prevent doesn't redirect to confirmation page
   e.preventDefault();
-  console.log("Ordered - POST in action ⤵");
 
-  // create object
-  const contactObject = {
-    contact: {
-      firstName: form.firstName.value,
-      lastName: form.lastName.value,
-      address: form.address.value,
-      city: form.city.value,
-      email: form.email.value,
-    },
-    products: [
-      // "107fb5b75607497b96722bda5b504926",
-      // "415b7cacb65d43b2b5c1ff70f3393ad1",
-    ],
-  };
-  // FOR GEORGE = this is working ⤵ (line:314-315)
-  // contactObject.products.push("107fb5b75607497b96722bda5b504926");
-  // contactObject.products.push("415b7cacb65d43b2b5c1ff70f3393ad1");
+  // calling RegExp function here ⤵
+  validate();
 
-  // fetch function to loop through catalog of products and
-  // added to cart products Id's - if match push id's to products array
-  /**
-   * if product id match catalog ID
-   * then push Id that match to the contactObject.products array
-   * products += products.push[i]
-   */
-  catalog.then((catalog) => {
+  // if validate function is true
+  if (validate() === true) {
+    // create object
+    const contactObject = {
+      contact: {
+        firstName: form.firstName.value,
+        lastName: form.lastName.value,
+        address: form.address.value,
+        city: form.city.value,
+        email: form.email.value,
+      },
+      products: [],
+    };
+
+    // #TODO push object to local storage? do i need to?
+
+    // loop to push chosen products into object.products by id
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
-    // Nested loops to match items
-    for (let chosenItem in cart) {
-      for (let allItems in catalog) {
-        // if Id in cart match item Id in catalog
-        if (catalog[allItems]._id == cart[chosenItem].id) {
-          const productId = cart[chosenItem].id;
-          // FOR GEORGE = but this is give back empty array (line:333)
-          contactObject.products.push(productId);
-          console.log("product Id:", productId);
-          console.log(contactObject.products);
-        } // end if
-      } // end for catalog
-    } // end for cart
-  }); // end of catalog.then((catalog)
+    // do not send request to the server if cart is empty
+    if (cart.length === 0) {
+      // alert user
+      alert("Cart is empty - nothing to order");
+      // exit function
+      throw new Error("Cart is empty");
+    }
+    // loop to push items in cart to object products
+    for (let i in cart) {
+      contactObject.products.push(cart[i].id);
+    } // end for in cart
 
-  // ------------Test products add to to array-------------------
-  // console.log("products array:", contactObject.products);
-  // ------------Test products add to to array-------------------
-
-  // "https://reqres.in/api/users"
-  postRequest(contactObject);
-  // send user to conformation page
-  // window.location.href = "confirmation.html";
+    // alert("Thank you for your order");
+    // call 'POST' function
+    console.log("Ordered - POST in action ⤵");
+    postRequest(contactObject);
+  } else {
+    // if validate is false do not update page, notify user
+    e.preventDefault();
+    // alert("Error in validation form");
+  }
 });
+// #TODO
+// 1. empty local storage after getting order number
 
 // function to POST user's input values in object
 // and get order Id back from server
@@ -366,11 +320,16 @@ function postRequest(contactObject) {
     })
     .then((data) => {
       console.log("Success");
-      console.log("Server response:", data);
-
-      // window.location.replace();
+      // console.log("Server response:", data);
       // console.log("orderId:", data.orderId);
-      // return data;
+
+      // clear localStorage after submitting
+      localStorage.clear();
+      // send user to conformation page
+      window.location.href = `confirmation.html?orderId=${data.orderId}`;
+      // with replace() so user can not go back and make changes on cart
+      // window.location.replace(`confirmation.html?orderId=${data.orderId}`);
+      // - no need replace because LS.clean()
     })
     .catch((err) => {
       console.error(err);
@@ -379,51 +338,3 @@ function postRequest(contactObject) {
 
 // end POST test field
 // =================================
-
-/**
- * > validate input: names = names, email = email ... etc.
- * > create object - contains inputs
- * > order: like fetch
- */
-
-/**
- *
- * Expects request to contain:
- * contact: {
- *   firstName: string,
- *   lastName: string,
- *   address: string,
- *   city: string,
- *   email: string
- * }
- * products: [string] <-- array of product _id
- *
- */
-
-// === some testing functions ===
-/*
-// sum of array test function start>
-const arrayOfNumbers = [1, 2, 3, 4, 5];
-// const letters = ["a", "b", "c", "d", "e"];
-const arrSum = (anyArray) => {
-  // create variable with value 0
-  let sum = 0;
-  // loop trough array
-  anyArray.forEach((number) => {
-    // add each array item (each number) to sum
-    sum += number;
-    console.log(sum);
-    // return result
-    return sum; // 15
-  });
-};
-arrSum(arrayOfNumbers);
-// arrSum(letters);
-// <end sum of array test function
-
-const doubleNum = arrayOfNumbers.map((value) => {
-  return value * 2;
-});
-console.log(doubleNum);
-arrSum(doubleNum);
-*/
