@@ -2,8 +2,6 @@
 const itemContainer = document.querySelector(".item");
 const colorDropdown = document.querySelector("#colors");
 const addToCartButton = document.getElementById("addToCart");
-// const chosenColor = document.getElementById("colors");
-// const chosenQuantity = document.getElementById("quantity");
 
 // --- URL Search Params ---
 // get product key search location
@@ -62,7 +60,7 @@ fetch(apiUrlId)
                     name="itemQuantity"
                     min="1"
                     max="100"
-                    value="1"
+                    value="0"
                     id="quantity" />
                 </div>
               </div>
@@ -73,7 +71,7 @@ fetch(apiUrlId)
             </div>
           </article>
       `;
-    // itemContainer.insertAdjacentHTML("beforeend", html);
+    // calling dom here because page needs time to load
     document
       .querySelector("section")
       .insertAdjacentHTML("beforeend", productPageHTML);
@@ -113,6 +111,7 @@ console.log("Product ID:", productParamId);
 
 // get info from local storage if not - create empty array
 // I choose "let" because otherwise it's store values in memory
+// and not letting it update dynamically without refresh of a page
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
 // Function - add productID with chosen color and quantity to local storage

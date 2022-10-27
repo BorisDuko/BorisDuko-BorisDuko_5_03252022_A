@@ -8,7 +8,7 @@ const apiURL = "http://localhost:3000/api/products";
 // get info from LS if null creates empty array
 // use LET to dynamically update quantity !important
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
-// console.log("Parsed cart items:", cart);
+console.log("Parsed cart items:", cart);
 
 // function to create "catalog" of all products
 const fetchAllProducts = async () => {
@@ -197,7 +197,6 @@ function accessToQuantityToggle() {
     });
   });
 }
-
 // ========================================================
 // <end Function detailed area
 // ========================================================
@@ -251,7 +250,7 @@ const validate = () => {
 };
 
 // =================================
-// POST test field
+// POST request field
 form.addEventListener("submit", (e) => {
   // without prevent doesn't redirect to confirmation page
   e.preventDefault();
@@ -272,8 +271,6 @@ form.addEventListener("submit", (e) => {
       },
       products: [],
     };
-
-    // #TODO push object to local storage? do i need to?
 
     // loop to push chosen products into object.products by id
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
@@ -299,8 +296,6 @@ form.addEventListener("submit", (e) => {
     // alert("Error in validation form");
   }
 });
-// #TODO
-// 1. empty local storage after getting order number
 
 // function to POST user's input values in object
 // and get order Id back from server
@@ -320,8 +315,8 @@ function postRequest(contactObject) {
     })
     .then((data) => {
       console.log("Success");
-      // console.log("Server response:", data);
-      // console.log("orderId:", data.orderId);
+      console.log("Server response:", data);
+      console.log("orderId:", data.orderId);
 
       // clear localStorage after submitting
       localStorage.clear();
@@ -335,6 +330,5 @@ function postRequest(contactObject) {
       console.error(err);
     });
 }
-
-// end POST test field
+// end POST request field
 // =================================
