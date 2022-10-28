@@ -287,6 +287,7 @@ form.addEventListener("submit", (e) => {
     } // end for in cart
 
     // alert("Thank you for your order");
+    console.log("Contact info and products:", contactObject);
     // call 'POST' function
     console.log("Ordered - POST in action ⤵");
     postRequest(contactObject);
@@ -320,9 +321,9 @@ function postRequest(contactObject) {
 
       // clear localStorage after submitting
       localStorage.clear();
-      // send user to conformation page
+      // send user to confirmation page
+      // comment line 326 to see server response data ⤵
       window.location.href = `confirmation.html?orderId=${data.orderId}`;
-      // with replace() so user can not go back and make changes on cart
       // window.location.replace(`confirmation.html?orderId=${data.orderId}`);
       // - no need replace because LS.clean()
     })
